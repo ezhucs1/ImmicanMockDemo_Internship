@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16
+    container_name: immican_db
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - pgdata:/var/lib/postgresql/data
+  adminer:                      # Optional: web UI for DB
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+volumes:
+  pgdata:
