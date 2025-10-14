@@ -45,3 +45,17 @@ docker ps            # you should see immican_db and adminer "Up ..."
 
 # 4) (Optional) If db still won’t start, check why:
 docker logs immican_db --tail=100
+
+
+
+
+
+git add . (all files added)
+
+git commit -m "msg to send"
+
+git push or git push origin master:main
+
+after rename (git branch -M main)
+
+git push -u origin main

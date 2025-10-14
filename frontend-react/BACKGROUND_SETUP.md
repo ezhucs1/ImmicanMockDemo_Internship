@@ -53,3 +53,6 @@ If no image is found, the app will show a gradient background as fallback.
 3. Your custom background should appear!
 
 
+
+
+
