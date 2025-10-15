@@ -3,6 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Register from "./Register";
+import ServiceProviderLogin from "./ServiceProviderLogin";
+import ServiceProviderRegister from "./ServiceProviderRegister";
+import ServiceProviderDashboard from "./ServiceProviderDashboard";
+import Conversation from "./Conversation";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -39,7 +43,9 @@ export default function App() {
           path="/" 
           element={
             isAuthenticated ? 
-            <Navigate to="/dashboard" replace /> : 
+            (user?.user_type === "ServiceProvider" ? 
+              <Navigate to="/service-provider-dashboard" replace /> : 
+              <Navigate to="/dashboard" replace />) : 
             <Register />
           } 
         />
@@ -47,15 +53,49 @@ export default function App() {
           path="/login" 
           element={
             isAuthenticated ? 
-            <Navigate to="/dashboard" replace /> : 
+            (user?.user_type === "ServiceProvider" ? 
+              <Navigate to="/service-provider-dashboard" replace /> : 
+              <Navigate to="/dashboard" replace />) : 
             <Login onLogin={handleLogin} />
           } 
         />
         <Route 
           path="/dashboard" 
           element={
-            isAuthenticated ? 
+            isAuthenticated && user?.user_type !== "ServiceProvider" ? 
             <Dashboard user={user} onLogout={handleLogout} /> : 
+            <Navigate to="/login" replace />
+          } 
+        />
+        <Route 
+          path="/service-provider-login" 
+          element={
+            isAuthenticated ? 
+            <Navigate to="/service-provider-dashboard" replace /> : 
+            <ServiceProviderLogin onLogin={handleLogin} />
+          } 
+        />
+        <Route 
+          path="/service-provider-register" 
+          element={
+            isAuthenticated ? 
+            <Navigate to="/service-provider-dashboard" replace /> : 
+            <ServiceProviderRegister />
+          } 
+        />
+        <Route 
+          path="/service-provider-dashboard" 
+          element={
+            isAuthenticated && user?.user_type === "ServiceProvider" ? 
+            <ServiceProviderDashboard user={user} onLogout={handleLogout} /> : 
+            <Navigate to="/service-provider-login" replace />
+          } 
+        />
+        <Route 
+          path="/conversation/:requestId" 
+          element={
+            isAuthenticated ? 
+            <Conversation user={user} /> : 
             <Navigate to="/login" replace />
           } 
         />

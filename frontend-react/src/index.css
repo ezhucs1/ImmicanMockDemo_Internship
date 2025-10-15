@@ -6,3 +6,308 @@
 
 html, body, #root { height: 100%; }
 body { background: #0b0e13; color: #fff; }
+
+/* ============ SYSTEMATIC TEXT COLOR RULES ============ */
+
+/* DARK BACKGROUNDS - Use WHITE text */
+.bg-gray-900, .bg-slate-900, .bg-gray-800, .bg-slate-800,
+.bg-gray-700, .bg-slate-700, .bg-indigo-900, .bg-indigo-800,
+.bg-indigo-700, .bg-purple-900, .bg-purple-800, .bg-purple-700,
+.bg-blue-900, .bg-blue-800, .bg-blue-700, .bg-red-900, .bg-red-800,
+.bg-green-900, .bg-green-800, .bg-yellow-900, .bg-yellow-800,
+.bg-black, .bg-gray-900, .bg-slate-900 {
+  color: #ffffff !important;
+}
+
+.bg-gray-900 *, .bg-slate-900 *, .bg-gray-800 *, .bg-slate-800 *,
+.bg-gray-700 *, .bg-slate-700 *, .bg-indigo-900 *, .bg-indigo-800 *,
+.bg-indigo-700 *, .bg-purple-900 *, .bg-purple-800 *, .bg-purple-700 *,
+.bg-blue-900 *, .bg-blue-800 *, .bg-blue-700 *, .bg-red-900 *, .bg-red-800 *,
+.bg-green-900 *, .bg-green-800 *, .bg-yellow-900 *, .bg-yellow-800 *,
+.bg-black *, .bg-gray-900 *, .bg-slate-900 * {
+  color: #ffffff !important;
+}
+
+/* LIGHT BACKGROUNDS - Use BLACK/DARK text */
+.bg-white, .bg-gray-50, .bg-slate-50, .bg-gray-100, .bg-slate-100,
+.bg-gray-200, .bg-slate-200, .bg-indigo-50, .bg-indigo-100,
+.bg-purple-50, .bg-purple-100, .bg-blue-50, .bg-blue-100,
+.bg-red-50, .bg-red-100, .bg-green-50, .bg-green-100,
+.bg-yellow-50, .bg-yellow-100 {
+  color: #000000 !important;
+}
+
+.bg-white *, .bg-gray-50 *, .bg-slate-50 *, .bg-gray-100 *, .bg-slate-100 *,
+.bg-gray-200 *, .bg-slate-200 *, .bg-indigo-50 *, .bg-indigo-100 *,
+.bg-purple-50 *, .bg-purple-100 *, .bg-blue-50 *, .bg-blue-100 *,
+.bg-red-50 *, .bg-red-100 *, .bg-green-50 *, .bg-green-100 *,
+.bg-yellow-50 *, .bg-yellow-100 * {
+  color: #000000 !important;
+}
+
+/* MEDIUM BACKGROUNDS - Use appropriate contrast */
+.bg-gray-300, .bg-slate-300, .bg-gray-400, .bg-slate-400,
+.bg-gray-500, .bg-slate-500, .bg-gray-600, .bg-slate-600 {
+  color: #000000 !important; /* Dark text on medium backgrounds */
+}
+
+.bg-gray-300 *, .bg-slate-300 *, .bg-gray-400 *, .bg-slate-400 *,
+.bg-gray-500 *, .bg-slate-500 *, .bg-gray-600 *, .bg-slate-600 * {
+  color: #000000 !important;
+}
+
+/* ============ FORM ELEMENTS ============ */
+input, select, textarea {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+/* Dark form elements on dark backgrounds */
+.bg-gray-900 input, .bg-slate-900 input, .bg-gray-800 input, .bg-slate-800 input,
+.bg-gray-700 input, .bg-slate-700 input, .bg-indigo-900 input, .bg-indigo-800 input,
+.bg-indigo-700 input, .bg-purple-900 input, .bg-purple-800 input, .bg-purple-700 input,
+.bg-blue-900 input, .bg-blue-800 input, .bg-blue-700 input, .bg-red-900 input, .bg-red-800 input,
+.bg-green-900 input, .bg-green-800 input, .bg-yellow-900 input, .bg-yellow-800 input,
+.bg-black input, .bg-gray-900 input, .bg-slate-900 input {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.bg-gray-900 select, .bg-slate-900 select, .bg-gray-800 select, .bg-slate-800 select,
+.bg-gray-700 select, .bg-slate-700 select, .bg-indigo-900 select, .bg-indigo-800 select,
+.bg-indigo-700 select, .bg-purple-900 select, .bg-purple-800 select, .bg-purple-700 select,
+.bg-blue-900 select, .bg-blue-800 select, .bg-blue-700 select, .bg-red-900 select, .bg-red-800 select,
+.bg-green-900 select, .bg-green-800 select, .bg-yellow-900 select, .bg-yellow-800 select,
+.bg-black select, .bg-gray-900 select, .bg-slate-900 select {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.bg-gray-900 textarea, .bg-slate-900 textarea, .bg-gray-800 textarea, .bg-slate-800 textarea,
+.bg-gray-700 textarea, .bg-slate-700 textarea, .bg-indigo-900 textarea, .bg-indigo-800 textarea,
+.bg-indigo-700 textarea, .bg-purple-900 textarea, .bg-purple-800 textarea, .bg-purple-700 textarea,
+.bg-blue-900 textarea, .bg-blue-800 textarea, .bg-blue-700 textarea, .bg-red-900 textarea, .bg-red-800 textarea,
+.bg-green-900 textarea, .bg-green-800 textarea, .bg-yellow-900 textarea, .bg-yellow-800 textarea,
+.bg-black textarea, .bg-gray-900 textarea, .bg-slate-900 textarea {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============ OVERRIDE SPECIFIC TAILWIND CLASSES ============ */
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-black {
+  color: #000000 !important;
+}
+
+/* ============ SPECIFIC MESSAGE BUBBLE FIXES ============ */
+/* Ensure white text on purple/indigo message bubbles */
+.bg-indigo-600, .bg-purple-600, .bg-blue-600, .bg-indigo-500, .bg-purple-500, .bg-blue-500 {
+  color: #ffffff !important;
+}
+
+.bg-indigo-600 *, .bg-purple-600 *, .bg-blue-600 *, .bg-indigo-500 *, .bg-purple-500 *, .bg-blue-500 * {
+  color: #ffffff !important;
+}
+
+/* Override any conflicting text color classes on colored backgrounds */
+.bg-indigo-600 .text-gray-900, .bg-purple-600 .text-gray-900, .bg-blue-600 .text-gray-900,
+.bg-indigo-500 .text-gray-900, .bg-purple-500 .text-gray-900, .bg-blue-500 .text-gray-900,
+.bg-indigo-600 .text-slate-900, .bg-purple-600 .text-slate-900, .bg-blue-600 .text-slate-900,
+.bg-indigo-500 .text-slate-900, .bg-purple-500 .text-slate-900, .bg-blue-500 .text-slate-900 {
+  color: #ffffff !important;
+}
+
+/* Ensure text color classes work with background rules */
+.text-slate-900, .text-gray-900 { color: #000000 !important; }
+.text-slate-800, .text-gray-800 { color: #000000 !important; }
+.text-slate-700, .text-gray-700 { color: #000000 !important; }
+.text-slate-600, .text-gray-600 { color: #000000 !important; }
+.text-slate-500, .text-gray-500 { color: #000000 !important; }
+.text-slate-400, .text-gray-400 { color: #000000 !important; }
+.text-slate-300, .text-gray-300 { color: #000000 !important; }
+.text-slate-200, .text-gray-200 { color: #000000 !important; }
+.text-slate-100, .text-gray-100 { color: #000000 !important; }
+.text-slate-50, .text-gray-50 { color: #000000 !important; }
+
+/* ============ STAR RATING COLORS ============ */
+/* Ensure star symbols are always yellow/gold */
+.text-yellow-500, .text-yellow-400, .text-yellow-600 {
+  color: #eab308 !important; /* Bright yellow/gold */
+}
+
+/* Star symbol specific styling */
+span:contains("★"), span:contains("⭐") {
+  color: #eab308 !important;
+}
+
+/* ============ STATUS BADGE COLORS ============ */
+/* Enhanced status colors for better visibility and appeal */
+.bg-green-100 {
+  background-color: #dcfce7 !important; /* Light green */
+}
+
+.text-green-800 {
+  color: #166534 !important; /* Dark green */
+}
+
+.bg-yellow-100 {
+  background-color: #fef3c7 !important; /* Light yellow */
+}
+
+.text-yellow-800 {
+  color: #92400e !important; /* Dark yellow/amber */
+}
+
+.bg-blue-100 {
+  background-color: #dbeafe !important; /* Light blue */
+}
+
+.text-blue-800 {
+  color: #1e40af !important; /* Dark blue */
+}
+
+.bg-red-100 {
+  background-color: #fee2e2 !important; /* Light red */
+}
+
+.text-red-800 {
+  color: #991b1b !important; /* Dark red */
+}
+
+/* ============ LINK COLORS ============ */
+/* Ensure specific link colors are maintained */
+.text-indigo-600 {
+  color: #4f46e5 !important; /* Indigo - same as Create Account button */
+}
+
+.text-indigo-700 {
+  color: #4338ca !important; /* Darker indigo for hover */
+}
+
+.text-purple-600 {
+  color: #9333ea !important; /* Purple */
+}
+
+.text-purple-700 {
+  color: #7c3aed !important; /* Darker purple for hover */
+}
+
+.text-green-600 {
+  color: #16a34a !important; /* Green */
+}
+
+.text-green-700 {
+  color: #15803d !important; /* Darker green for hover */
+}
+
+/* ============ HINT TEXT COLORS ============ */
+/* Make hint/help text lighter and more subtle */
+.text-slate-400 {
+  color: #94a3b8 !important; /* Light gray for hints */
+}
+
+.text-slate-500 {
+  color: #64748b !important; /* Medium gray */
+}
+
+/* ============ PRIORITY COLOR CODING ============ */
+/* Priority level colors for consistent visual hierarchy */
+.bg-red-100 {
+  background-color: #fee2e2 !important; /* Light red for URGENT */
+}
+
+.text-red-800 {
+  color: #991b1b !important; /* Dark red text for URGENT */
+}
+
+.bg-orange-100 {
+  background-color: #fed7aa !important; /* Light orange for HIGH */
+}
+
+.text-orange-800 {
+  color: #9a3412 !important; /* Dark orange text for HIGH */
+}
+
+.bg-yellow-100 {
+  background-color: #fef3c7 !important; /* Light yellow for MEDIUM */
+}
+
+.text-yellow-800 {
+  color: #92400e !important; /* Dark yellow text for MEDIUM */
+}
+
+.bg-green-100 {
+  background-color: #dcfce7 !important; /* Light green for LOW */
+}
+
+.text-green-800 {
+  color: #166534 !important; /* Dark green text for LOW */
+}
+
+/* ============ FORM LABEL COLORS ============ */
+/* Ensure form labels are always black and readable */
+label {
+  color: #1f2937 !important; /* Dark gray/black for labels */
+}
+
+.text-gray-700 {
+  color: #374151 !important; /* Dark gray for labels */
+}
+
+/* Specific fix for form labels in white containers */
+.bg-white label,
+.bg-gray-50 label,
+.bg-slate-50 label {
+  color: #1f2937 !important; /* Force black text on light backgrounds */
+}
+
+/* ============ INPUT TEXT COLORS ============ */
+/* Ensure input text is always black and readable */
+input, textarea, select {
+  color: #1f2937 !important; /* Dark gray/black for input text */
+}
+
+input::placeholder, textarea::placeholder {
+  color: #9ca3af !important; /* Light gray for placeholders */
+}
+
+/* Specific fix for input text in white containers */
+.bg-white input,
+.bg-white textarea,
+.bg-white select,
+.bg-gray-50 input,
+.bg-gray-50 textarea,
+.bg-gray-50 select,
+.bg-slate-50 input,
+.bg-slate-50 textarea,
+.bg-slate-50 select {
+  color: #1f2937 !important; /* Force black text on light backgrounds */
+}
+
+.bg-white input::placeholder,
+.bg-white textarea::placeholder,
+.bg-gray-50 input::placeholder,
+.bg-gray-50 textarea::placeholder,
+.bg-slate-50 input::placeholder,
+.bg-slate-50 textarea::placeholder {
+  color: #9ca3af !important; /* Light gray placeholders */
+}
+
+/* ============ LOGIN PAGE HEADER COLORS ============ */
+/* Ensure login page headers are visible on dark backgrounds */
+.text-white {
+  color: #ffffff !important; /* Pure white for headers */
+}
+
+.text-gray-200 {
+  color: #e5e7eb !important; /* Light gray for subtitles */
+}
+
+/* Ensure white text is visible on any background */
+h1.text-white, h2.text-white, h3.text-white {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow for better readability */
+}

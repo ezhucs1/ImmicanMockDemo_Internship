@@ -32,8 +32,12 @@ export default function Login({ onLogin }) {
         // Call the onLogin callback to update parent state
         onLogin(data.user);
         
-        // Navigate to dashboard
-        navigate("/dashboard");
+        // Navigate based on user type
+        if (data.user.user_type === "ServiceProvider") {
+          navigate("/service-provider-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         setError(data.msg || "Login failed");
       }
@@ -114,6 +118,15 @@ export default function Login({ onLogin }) {
                 Create one here
               </button>
             </p>
+            <p className="text-sm text-slate-600">
+              Are you a service provider?{" "}
+              <button
+                onClick={() => navigate("/service-provider-login")}
+                className="text-green-600 hover:text-green-700 font-medium cursor-pointer hover:underline transition-colors"
+              >
+                Service Provider Login
+              </button>
+            </p>
             <p className="text-sm text-slate-500">
               <button className="text-slate-500 hover:text-slate-700 cursor-pointer hover:underline transition-colors">
                 Forgot your password?
@@ -123,7 +136,16 @@ export default function Login({ onLogin }) {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-8 space-y-2">
+          <p className="text-sm text-slate-500">
+            Are you a service provider?{" "}
+            <button 
+              onClick={() => navigate("/service-provider-login")}
+              className="text-green-600 hover:text-green-700 cursor-pointer hover:underline transition-colors"
+            >
+              Service Provider Login
+            </button>
+          </p>
           <p className="text-sm text-slate-500">
             By signing in, you agree to our{" "}
             <button className="text-indigo-600 hover:text-indigo-700">Terms of Service</button>
