@@ -3,6 +3,15 @@ import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
+// Helper function to get auth headers
+function getAuthHeaders() {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    ...(token && { "Authorization": `Bearer ${token}` })
+  };
+}
+
 export default function Dashboard({ user, onLogout }) {
   const [profile, setProfile] = useState(null);
   const [serviceRequests, setServiceRequests] = useState([]);
@@ -16,6 +25,10 @@ export default function Dashboard({ user, onLogout }) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,21 +44,27 @@ export default function Dashboard({ user, onLogout }) {
       setLoading(true);
       
       // Load user profile
-      const profileRes = await fetch(`${API}/api/users/${user.id}/profile`);
+      const profileRes = await fetch(`${API}/api/users/${user.id}/profile`, {
+        headers: getAuthHeaders()
+      });
       const profileData = await profileRes.json();
       if (profileData.ok) {
         setProfile(profileData.profile);
       }
 
       // Load service requests
-      const requestsRes = await fetch(`${API}/api/users/${user.id}/service-requests`);
+      const requestsRes = await fetch(`${API}/api/users/${user.id}/service-requests`, {
+        headers: getAuthHeaders()
+      });
       const requestsData = await requestsRes.json();
       if (requestsData.ok) {
         setServiceRequests(requestsData.requests);
       }
 
       // Load service providers
-      const providersRes = await fetch(`${API}/api/service-providers`);
+      const providersRes = await fetch(`${API}/api/service-providers`, {
+        headers: getAuthHeaders()
+      });
       const providersData = await providersRes.json();
       if (providersData.ok) {
         setServiceProviders(providersData.providers);
@@ -64,7 +83,7 @@ export default function Dashboard({ user, onLogout }) {
     try {
       const res = await fetch(`${API}/api/service-requests`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           user_id: user.id,
           provider_id: selectedProvider.id,
@@ -90,9 +109,50 @@ export default function Dashboard({ user, onLogout }) {
     }
   }
 
+  async function handleConfirmCompletion(requestId) {
+    console.log("handleConfirmCompletion called with:", { requestId, rating, userId: user.id });
+    
+    if (rating === 0) {
+      setError("Please provide a rating before confirming completion");
+      return;
+    }
+
+    try {
+      console.log("Making API call to confirm completion...");
+      const res = await fetch(`${API}/api/service-requests/${requestId}/confirm`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          user_id: user.id,
+          rating: rating
+        })
+      });
+
+      console.log("API response status:", res.status);
+      const data = await res.json();
+      console.log("API response data:", data);
+      
+      if (data.ok) {
+        setShowConfirmModal(false);
+        setSelectedRequest(null);
+        setRating(0);
+        setHoverRating(0);
+        loadDashboardData(); // Refresh data
+        alert("Thank you for confirming! Your rating has been recorded.");
+      } else {
+        setError(data.msg || "Failed to confirm completion");
+      }
+    } catch (err) {
+      console.error("Error in handleConfirmCompletion:", err);
+      setError(`Network error: ${String(err)}`);
+    }
+  }
+
   function handleLogout() {
     localStorage.removeItem("user");
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     onLogout();
     navigate("/");
   }
@@ -120,7 +180,7 @@ export default function Dashboard({ user, onLogout }) {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Welcome, {profile?.first_name || user.email}
+                Welcome, {profile?.first_name || (user.full_name ? user.full_name.split(' ')[0] : user.email)}
               </span>
               <button
                 onClick={handleLogout}
@@ -215,7 +275,7 @@ export default function Dashboard({ user, onLogout }) {
                           request.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-green-100 text-green-800'
                         }`}>
-                          {request.priority}
+                          Priority: {request.priority}
                         </span>
                         <span>Requested: {new Date(request.requested_date).toLocaleDateString()}</span>
                       </div>
@@ -227,6 +287,31 @@ export default function Dashboard({ user, onLogout }) {
                           >
                             Open Conversation
                           </button>
+                        </div>
+                      )}
+                      {request.status === 'COMPLETED' && (
+                        <div className="mt-3">
+                          <div className="flex space-x-2 mb-2">
+                            <button
+                              onClick={() => navigate(`/conversation/${request.id}`)}
+                              className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
+                            >
+                              View Conversation
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedRequest(request);
+                                setError(""); // Clear any previous errors
+                                setShowConfirmModal(true);
+                              }}
+                              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                            >
+                              Confirm Completion
+                            </button>
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            Service completed on {new Date(request.completed_date).toLocaleDateString()}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -317,10 +402,10 @@ export default function Dashboard({ user, onLogout }) {
                   onChange={(e) => setRequestForm({...requestForm, priority: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
-                  <option value="LOW">Low</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HIGH">High</option>
-                  <option value="URGENT">Urgent</option>
+                  <option value="LOW">Priority: Low</option>
+                  <option value="MEDIUM">Priority: Medium</option>
+                  <option value="HIGH">Priority: High</option>
+                  <option value="URGENT">Priority: Urgent</option>
                 </select>
               </div>
               <div className="flex space-x-3 pt-4">
@@ -343,6 +428,76 @@ export default function Dashboard({ user, onLogout }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Completion Modal */}
+      {showConfirmModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Confirm Service Completion
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Please confirm that the service "<strong>{selectedRequest.title}</strong>" has been completed to your satisfaction.
+            </p>
+            
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Rate your experience with {selectedRequest.provider?.name}:
+              </label>
+              <div className="flex items-center space-x-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="text-2xl focus:outline-none"
+                  >
+                    <span className={`${(hoverRating >= star || rating >= star) ? 'text-yellow-500' : 'text-gray-300'}`}>
+                      ★
+                    </span>
+                  </button>
+                ))}
+                <span className="ml-2 text-sm text-gray-600">
+                  {rating > 0 && `${rating} star${rating > 1 ? 's' : ''}`}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setSelectedRequest(null);
+                  setRating(0);
+                  setHoverRating(0);
+                  setError(""); // Clear error when closing modal
+                }}
+                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  console.log("Confirm & Rate button clicked");
+                  handleConfirmCompletion(selectedRequest.id);
+                }}
+                disabled={rating === 0}
+                className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Confirm & Rate
+              </button>
+            </div>
           </div>
         </div>
       )}

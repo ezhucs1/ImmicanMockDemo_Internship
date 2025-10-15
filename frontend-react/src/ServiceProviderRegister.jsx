@@ -5,6 +5,8 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 export default function ServiceProviderRegister() {
   const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
     name: "",
     email: "",
     password: "",
@@ -17,6 +19,15 @@ export default function ServiceProviderRegister() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const navigate = useNavigate();
+  
+  // Password strength checker
+  const [passwordChecks, setPasswordChecks] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  });
 
   const serviceTypes = [
     "Legal",
@@ -26,6 +37,19 @@ export default function ServiceProviderRegister() {
     "Housing",
     "Other"
   ];
+  
+  // Password validation function
+  const validatePassword = (pwd) => {
+    const checks = {
+      length: pwd.length >= 8,
+      uppercase: /[A-Z]/.test(pwd),
+      lowercase: /[a-z]/.test(pwd),
+      number: /\d/.test(pwd),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(pwd)
+    };
+    setPasswordChecks(checks);
+    return checks;
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -43,6 +67,8 @@ export default function ServiceProviderRegister() {
       if (data.ok) {
         setResult("✅ Service provider account created successfully! You can now login.");
         setFormData({
+          first_name: "",
+          last_name: "",
           name: "",
           email: "",
           password: "",
@@ -89,6 +115,37 @@ export default function ServiceProviderRegister() {
             
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      First Name *
+                    </label>
+                    <input
+                      name="first_name"
+                      type="text"
+                      required
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Your first name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Last Name *
+                    </label>
+                    <input
+                      name="last_name"
+                      type="text"
+                      required
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Your last name"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Business Name *
@@ -128,10 +185,37 @@ export default function ServiceProviderRegister() {
                     type="password"
                     required
                     value={formData.password}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      handleChange(e);
+                      validatePassword(e.target.value);
+                    }}
                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder="Create a secure password"
                   />
+                  
+                  {/* Password Requirements Checklist */}
+                  <div className="mt-2 space-y-1">
+                    <div className={`flex items-center text-xs ${passwordChecks.length ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.length ? '✓' : '○'}</span>
+                      At least 8 characters
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.uppercase ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.uppercase ? '✓' : '○'}</span>
+                      One uppercase letter
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.lowercase ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.lowercase ? '✓' : '○'}</span>
+                      One lowercase letter
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.number ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.number ? '✓' : '○'}</span>
+                      One number
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.special ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.special ? '✓' : '○'}</span>
+                      One special character
+                    </div>
+                  </div>
                 </div>
 
                 <div>

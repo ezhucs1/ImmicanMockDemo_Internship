@@ -19,15 +19,17 @@ export default function Login({ onLogin }) {
       const res = await fetch(`${API}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, user_type: "Immigrant" }),
       });
 
       const data = await res.json();
       
       if (data.ok) {
-        // Store user data in localStorage for session management
+        // Store user data and tokens in localStorage for session management
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("access_token", data.tokens.access_token);
+        localStorage.setItem("refresh_token", data.tokens.refresh_token);
         
         // Call the onLogin callback to update parent state
         onLogin(data.user);

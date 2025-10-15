@@ -3,12 +3,24 @@ import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
+// Helper function to get auth headers
+function getAuthHeaders() {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    ...(token && { "Authorization": `Bearer ${token}` })
+  };
+}
+
 export default function ServiceProviderDashboard({ user, onLogout }) {
   const [serviceRequests, setServiceRequests] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [acceptNotes, setAcceptNotes] = useState("");
+  const [completionNotes, setCompletionNotes] = useState("");
   const [providerProfile, setProviderProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,20 +39,26 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
       setLoading(true);
       
       // First, get the provider profile for this user
-      const profileRes = await fetch(`${API}/api/users/${user.id}/provider-profile`);
+      const profileRes = await fetch(`${API}/api/users/${user.id}/provider-profile`, {
+        headers: getAuthHeaders()
+      });
       const profileData = await profileRes.json();
       if (profileData.ok) {
         setProviderProfile(profileData.provider);
-        
+
         // Load service requests using the actual provider ID
-        const requestsRes = await fetch(`${API}/api/service-providers/${profileData.provider.id}/requests`);
+        const requestsRes = await fetch(`${API}/api/service-providers/${profileData.provider.id}/requests`, {
+          headers: getAuthHeaders()
+        });
         const requestsData = await requestsRes.json();
         if (requestsData.ok) {
           setServiceRequests(requestsData.requests);
         }
 
         // Load conversations using the actual provider ID
-        const conversationsRes = await fetch(`${API}/api/service-providers/${profileData.provider.id}/conversations`);
+        const conversationsRes = await fetch(`${API}/api/service-providers/${profileData.provider.id}/conversations`, {
+          headers: getAuthHeaders()
+        });
         const conversationsData = await conversationsRes.json();
         if (conversationsData.ok) {
           setConversations(conversationsData.conversations);
@@ -59,7 +77,7 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
     try {
       const res = await fetch(`${API}/api/service-requests/${requestId}/accept`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           provider_id: providerProfile?.id,
           notes: acceptNotes
@@ -81,9 +99,37 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
     }
   }
 
+  async function handleCompleteService(requestId) {
+    try {
+      const res = await fetch(`${API}/api/service-requests/${requestId}/complete`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          provider_id: providerProfile?.id,
+          completion_notes: completionNotes
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        setShowCompleteModal(false);
+        setSelectedRequest(null);
+        setCompletionNotes("");
+        loadDashboardData(); // Refresh data
+        alert("Service marked as completed! The client has been notified.");
+      } else {
+        setError(data.msg || "Failed to complete service");
+      }
+    } catch (err) {
+      setError(`Network error: ${String(err)}`);
+    }
+  }
+
   function handleLogout() {
     localStorage.removeItem("user");
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     onLogout();
     navigate("/service-provider-login");
   }
@@ -122,7 +168,7 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Welcome, {providerProfile?.name || user.email}
+                Welcome, {providerProfile?.first_name || (user.full_name ? user.full_name.split(' ')[0] : user.email)}
               </span>
               <button
                 onClick={handleLogout}
@@ -167,7 +213,7 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
                           request.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-green-100 text-green-800'
                         }`}>
-                          {request.priority}
+                          Priority: {request.priority}
                         </span>
                         <span>Requested: {new Date(request.requested_date).toLocaleDateString()}</span>
                       </div>
@@ -183,7 +229,10 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
                             Accept Request
                           </button>
                           <button
-                            onClick={() => navigate(`/conversation/${request.id}`)}
+                            onClick={() => {
+                              setSelectedRequest(request);
+                              setShowDetailsModal(true);
+                            }}
                             className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
                           >
                             View Details
@@ -198,6 +247,28 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
                           >
                             Open Conversation
                           </button>
+                          <button
+                            onClick={() => {
+                              setSelectedRequest(request);
+                              setShowCompleteModal(true);
+                            }}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                          >
+                            Mark as Completed
+                          </button>
+                        </div>
+                      )}
+                      {request.status === 'COMPLETED' && (
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => navigate(`/conversation/${request.id}`)}
+                            className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
+                          >
+                            View Conversation
+                          </button>
+                          <span className="text-sm text-gray-500 px-3 py-1">
+                            Service completed on {new Date(request.completed_date).toLocaleDateString()}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -276,6 +347,148 @@ export default function ServiceProviderDashboard({ user, onLogout }) {
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
               >
                 Accept Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Details Modal */}
+      {showDetailsModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-lg w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Service Request Details
+            </h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
+                <p className="text-gray-900 bg-gray-50 p-3 rounded-md">
+                  {selectedRequest.title}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Service Type
+                </label>
+                <p className="text-gray-900 bg-gray-50 p-3 rounded-md">
+                  {selectedRequest.service_type}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <p className="text-gray-900 bg-gray-50 p-3 rounded-md">
+                  {selectedRequest.description || "No description provided"}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Priority
+                </label>
+                <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                  selectedRequest.priority === 'URGENT' ? 'bg-red-100 text-red-800' :
+                  selectedRequest.priority === 'HIGH' ? 'bg-orange-100 text-orange-800' :
+                  selectedRequest.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  Priority: {selectedRequest.priority}
+                </span>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Requested Date
+                </label>
+                <p className="text-gray-900 bg-gray-50 p-3 rounded-md">
+                  {new Date(selectedRequest.requested_date).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Client
+                </label>
+                <p className="text-gray-900 bg-gray-50 p-3 rounded-md">
+                  {selectedRequest.client?.name || "Unknown Client"}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex space-x-3 pt-6">
+              <button
+                onClick={() => {
+                  setShowDetailsModal(false);
+                  setSelectedRequest(null);
+                }}
+                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+              >
+                Close
+              </button>
+              {selectedRequest.status === 'PENDING' && (
+                <button
+                  onClick={() => {
+                    setShowDetailsModal(false);
+                    setShowAcceptModal(true);
+                  }}
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+                >
+                  Accept Request
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Complete Service Modal */}
+      {showCompleteModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Mark Service as Completed
+            </h3>
+            <p className="text-gray-600 mb-4">
+              You are about to mark this service as completed: <strong>{selectedRequest.title}</strong>
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              The client will be notified that the service has been completed successfully.
+            </p>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Completion Notes (Optional)
+              </label>
+              <textarea
+                value={completionNotes}
+                onChange={(e) => setCompletionNotes(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                rows="3"
+                placeholder="Add any notes about the completed service..."
+              />
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setShowCompleteModal(false);
+                  setSelectedRequest(null);
+                  setCompletionNotes("");
+                }}
+                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleCompleteService(selectedRequest.id)}
+                className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+              >
+                Mark as Completed
               </button>
             </div>
           </div>

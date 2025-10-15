@@ -19,18 +19,18 @@ export default function ServiceProviderLogin({ onLogin }) {
       const res = await fetch(`${API}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, user_type: "ServiceProvider" }),
       });
 
       const data = await res.json();
-      if (data.ok && data.user.user_type === "ServiceProvider") {
-        // Store user data and authentication status
+      if (data.ok) {
+        // Store user data and tokens
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("access_token", data.tokens.access_token);
+        localStorage.setItem("refresh_token", data.tokens.refresh_token);
         onLogin(data.user);
         navigate("/service-provider-dashboard");
-      } else if (data.ok && data.user.user_type !== "ServiceProvider") {
-        setResult("❌ This account is not registered as a service provider. Please use the client login.");
       } else {
         setResult(`❌ ${data.msg || "Login failed"}`);
       }

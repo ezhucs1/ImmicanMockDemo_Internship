@@ -144,9 +144,31 @@ export default function Register() {
   const [result, setResult] = useState("");
   const [userId, setUserId] = useState("");
   const navigate = useNavigate();
+  
+  // Password strength checker
+  const [passwordChecks, setPasswordChecks] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false
+  });
 
   // Get current translation
   const t = translations[lang] || translations.English;
+  
+  // Password validation function
+  const validatePassword = (pwd) => {
+    const checks = {
+      length: pwd.length >= 8,
+      uppercase: /[A-Z]/.test(pwd),
+      lowercase: /[a-z]/.test(pwd),
+      number: /\d/.test(pwd),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(pwd)
+    };
+    setPasswordChecks(checks);
+    return checks;
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -299,7 +321,10 @@ export default function Register() {
                   <input
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      validatePassword(e.target.value);
+                    }}
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all duration-200 hover:border-slate-400 focus:shadow-sm text-slate-900 placeholder:text-slate-500"
                     autoComplete="new-password"
                     placeholder={lang === "English" ? "Enter your password" : 
@@ -308,10 +333,45 @@ export default function Register() {
                               lang === "中文" ? "输入您的密码" : "Enter your password"}
                     required
                   />
-                  <Help>{lang === "English" ? "At least 8 characters is best." : 
-                        lang === "Français" ? "Au moins 8 caractères est préférable." :
-                        lang === "Español" ? "Al menos 8 caracteres es mejor." :
-                        lang === "中文" ? "至少8个字符最好。" : "At least 8 characters is best."}</Help>
+                  
+                  {/* Password Requirements Checklist */}
+                  <div className="mt-2 space-y-1">
+                    <div className={`flex items-center text-xs ${passwordChecks.length ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.length ? '✓' : '○'}</span>
+                      {lang === "English" ? "At least 8 characters" :
+                       lang === "Français" ? "Au moins 8 caractères" :
+                       lang === "Español" ? "Al menos 8 caracteres" :
+                       lang === "中文" ? "至少8个字符" : "At least 8 characters"}
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.uppercase ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.uppercase ? '✓' : '○'}</span>
+                      {lang === "English" ? "One uppercase letter" :
+                       lang === "Français" ? "Une lettre majuscule" :
+                       lang === "Español" ? "Una letra mayúscula" :
+                       lang === "中文" ? "一个大写字母" : "One uppercase letter"}
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.lowercase ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.lowercase ? '✓' : '○'}</span>
+                      {lang === "English" ? "One lowercase letter" :
+                       lang === "Français" ? "Une lettre minuscule" :
+                       lang === "Español" ? "Una letra minúscula" :
+                       lang === "中文" ? "一个小写字母" : "One lowercase letter"}
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.number ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.number ? '✓' : '○'}</span>
+                      {lang === "English" ? "One number" :
+                       lang === "Français" ? "Un chiffre" :
+                       lang === "Español" ? "Un número" :
+                       lang === "中文" ? "一个数字" : "One number"}
+                    </div>
+                    <div className={`flex items-center text-xs ${passwordChecks.special ? 'text-green-600' : 'text-slate-500'}`}>
+                      <span className="mr-2">{passwordChecks.special ? '✓' : '○'}</span>
+                      {lang === "English" ? "One special character" :
+                       lang === "Français" ? "Un caractère spécial" :
+                       lang === "Español" ? "Un carácter especial" :
+                       lang === "中文" ? "一个特殊字符" : "One special character"}
+                    </div>
+                  </div>
                 </Field>
 
                 <div className="grid sm:grid-cols-2 gap-4">
