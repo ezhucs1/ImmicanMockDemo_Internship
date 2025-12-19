@@ -1,8 +1,8 @@
-# 🏠 immiCan - Canadian Immigration Services Platform
+# immiCan - Canadian Immigration Services Platform
 
 A comprehensive full-stack web application connecting immigrants with certified service providers for Canadian immigration services. Built with modern technologies and enterprise-grade security features.
 
-## 🎯 **Project Overview**
+## **Project Overview**
 
 **immiCan** is a platform that bridges the gap between newcomers to Canada and professional service providers. The application facilitates service requests, real-time communication, and provides a complete workflow from request submission to service completion and rating.
 
@@ -17,7 +17,7 @@ A comprehensive full-stack web application connecting immigrants with certified 
 - **Database-Backed Monitoring**: Comprehensive security event logging
 - **Database Administration**: Multiple admin tools (Adminer, pgAdmin, command-line access)
 
-## 🏗️ **System Architecture**
+## **System Architecture**
 
 ### **Technology Stack**
 - **Frontend**: React 18 + Vite + Tailwind CSS
@@ -48,7 +48,7 @@ JWT Token ← Session Management ← Authentication ← User Validation
 Real-time UI ← WebSocket ← SocketIO ← Security Events ← Audit Log
 ```
 
-## 📊 **Database Schema & Data Structure**
+## **Database Schema & Data Structure**
 
 ### **Core Tables**
 ```sql
@@ -89,7 +89,7 @@ users_login (1) ←→ (N) security_events
 users_login (1) ←→ (N) active_sessions
 ```
 
-## 🔄 **Workflow & Pipeline**
+## **Workflow & Pipeline**
 
 ### **User Registration Workflow**
 ```
@@ -111,7 +111,7 @@ users_login (1) ←→ (N) active_sessions
 1. API Request → 2. Security Headers → 3. Rate Limiting Check → 4. Input Validation → 5. Authentication Check → 6. Authorization Check → 7. Security Event Logging → 8. Response Generation
 ```
 
-## 🚀 **Setup Instructions**
+## **Setup Instructions**
 
 ### **Prerequisites**
 - Docker and Docker Compose
@@ -199,7 +199,7 @@ npm run dev
 - **Service Providers**: `provider@example.com`, `legal@example.com` / `ProviderPass123!`
 - **Complete List**: See `./manage_demo_users.sh --show` for all credentials
 
-## 🔐 **Email Verification System**
+## **Email Verification System**
 
 ### **Automatic Email Verification**
 - All new accounts require email verification before login
@@ -225,7 +225,7 @@ curl -X POST http://localhost:5001/api/resend-verification \
   -d '{"email": "user@example.com"}'
 ```
 
-## 🗄️ **Database Administration**
+## **Database Administration**
 
 ### **Multiple Admin Tools Available**
 
@@ -252,7 +252,7 @@ docker exec immican_db psql -U appuser -d appdb -c "SELECT * FROM users_login LI
 docker exec immican_db psql -U appuser -d appdb -c "\dt"
 ```
 
-## 🧪 **Testing Instructions**
+## **Testing Instructions**
 
 ### **Web Functionality Testing**
 ```bash
@@ -300,7 +300,7 @@ cd security_tests
 ./scripts/demo_security_working.sh
 ```
 
-## 🔧 **Development Workflow**
+## **Development Workflow**
 
 ### **Backend Development**
 ```bash
@@ -338,7 +338,7 @@ docker exec -i immican_db psql -U appuser -d appdb -c "\d users_login"
 docker exec -i immican_db psql -U appuser -d appdb < cleanup_database.sql
 ```
 
-## 🛡️ **Security Architecture**
+## **Security Architecture**
 
 ### **Security Layers**
 1. **Input Validation**: Email, password, name validation
@@ -365,7 +365,7 @@ cd security_tests
 ls -la  # View all available documentation and scripts
 ```
 
-## 📈 **Performance & Scalability**
+## **Performance & Scalability**
 
 ### **Current Performance**
 - **Response Time**: < 100ms for most API calls
@@ -379,32 +379,32 @@ ls -la  # View all available documentation and scripts
 - **Session Management**: Scalable session storage
 - **Rate Limiting**: Prevents abuse and ensures fair usage
 
-## 🎓 **For Potential Employers**
+## **For Potential Employers**
 
 ### **Technical Excellence**
 This project demonstrates **enterprise-level development practices** with:
 
-**✅ Full-Stack Development**
+**Full-Stack Development**
 - Modern React frontend with responsive design
 - RESTful API with Flask backend
 - Real-time WebSocket communication
 - Comprehensive database design
 
-**✅ Security-First Approach**
+**Security-First Approach**
 - JWT authentication with refresh tokens
 - Comprehensive input validation
 - Rate limiting and threat detection
 - Security event logging and monitoring
 - OWASP compliance implementation
 
-**✅ Production-Ready Features**
+**Production-Ready Features**
 - Docker containerization
 - Database migrations and schema management
 - Comprehensive error handling
 - Performance optimization
 - Scalable architecture design
 
-**✅ User Experience Focus**
+**User Experience Focus**
 - Intuitive user interface
 - Real-time feedback and validation
 - Multilingual support
@@ -425,7 +425,7 @@ This project demonstrates **enterprise-level development practices** with:
 - **Security best practices** implementation
 - **Clean, maintainable code** with documentation
 
-## 📞 **Support & Contact**
+## **Support & Contact**
 
 For questions about the implementation or security features, please refer to:
 - **User Guide**: `USER_GUIDE.md` - Comprehensive guide for clients and service providers
@@ -434,7 +434,7 @@ For questions about the implementation or security features, please refer to:
 - **Database Schema**: `db/init/` directory
 - **Frontend Components**: `frontend-react/src/` directory
 
-## 🏆 **Project Highlights**
+## **Project Highlights**
 
 ### **Technical Achievements**
 - **Real-time messaging** with WebSocket implementation
